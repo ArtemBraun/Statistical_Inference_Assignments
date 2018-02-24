@@ -1,0 +1,69 @@
+---
+title: "Statistical Inference Course Project - Part 2"
+author: "Artem Braun"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+### Statistical Inference Course Project - Part 2  
+\ 
+
+##### We are going to analyze the ToothGrowth data in the R datasets package and provide some conclusions in order to demonstrate inferential analysis skills. Since it is stated in the task that the code should be listed as supporting appendix, I provide report first and the code afterwards. 
+\ 
+
+#### **1. Basic exploratory data analysis**
+\ 
+
+##### From R documentation we can get the following information:  
+##### This dataset measures the influence of Vitamin C on tooth growth in Guinea Pigs. Dataset includes observations for different combinations of 2 supplements (OJ - orange juice and VC - Vitamin C) and 3 dosages (0.5mL, 1mL and 2mL). Using basic 'summary' function we can derive that there are 10 observations in dataset for each combination of dose and supplement, totalling 60 observations.
+\ 
+
+##### One of the best ways for the first look at the data is box plot. Plot 1 in appendix shows the range of length for each combination of dose and supplement. Looking at the plot, we can infer that the higher the supplement dosage - the higher the tooth length. Additionally, it looks like the mean for supplement VC is less than for OJ for doses 0.5 and 1, but for the dose 2 the difference is not so sound. To reaffirm our inference we can look at the aggregated means in Table 1. We see the same trend. 
+\ 
+
+####  **2. Hypothesis test to compare tooth growth by supplement and dose**
+\ 
+
+##### Based on our initial inferential analysis we can define the following hypothesis: tooth lenths do not depend on different supplements. In other words: does the tooth lenth statistically different between the VS and OJ supplements for each dosage. 
+\ 
+
+##### We will use t-test to test this hypothesis. We should do this test for each of dosages: 0.5, 1 and 2. If the p-values are less than 0.05, then we can determine our inferences with 95% confidence. 
+\ 
+
+##### The p-values for dosages 0.5 and 1 were quite small, whereas for dosage 2 p-value was significantly larger than 0.05, since the mean values are close together. 
+\ 
+
+####  **3. Assumptions and coclusions**
+\ 
+
+##### Based on provided t-tests we can conclude that for dosages up to 1mL orange juice affect teeth growth considerably more than Vitamin C. For dosages more that 1mL supplements orange juice and Vitamin C affect the teeth growth quite similar.  
+\ 
+
+#### **Supporting appendix material (code and figures)**
+\ 
+
+``````{r, echo=TRUE, message=FALSE}
+library(dplyr)
+library(ggplot2)
+
+Raw_data <- ToothGrowth
+summary(Raw_data)
+Raw_data$dose <- factor(Raw_data$dose)
+ggplot(Raw_data) + 
+        geom_boxplot() +
+        aes(x=dose,y=len, fill= supp) +
+        labs(title= "Plot 1. Tooth growth split by supplement and dose")
+Lenth_means <- aggregate(len ~ ., data = Raw_data, mean)
+Lenth_means <- split(Lenth_means, Lenth_means$dose)
+print("Table 1. Means of tooth lengths")
+print(Lenth_means)
+
+
+t.test(len~supp,Raw_data[Raw_data$dose=="0.5",])
+t.test(len~supp,Raw_data[Raw_data$dose=="1",])
+t.test(len~supp,Raw_data[Raw_data$dose=="2",])
+```
+
+
